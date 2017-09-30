@@ -26,8 +26,7 @@ TODO
 
 ## Model
 ### The model is submitted in the correct format
-
-TODO
+The resulting model can be found in the folder called data/weights . The model uses the default name of 'model_weights'.
 
 ### The neural network must achieve a minimum level of accuracy for the network implemented
 
@@ -36,7 +35,6 @@ The model performs OK in follow mode, but takes a long time to lock on to the he
 The resulting IoU (Intersection of union) score is 46%. Over the required threshold, but not by much. The detection of the hero at distance ruins the score and performance.
 
 A video from the follow mode can be found [here (docs/misc/FollowMe.mp4)](./docs/misc/FollowMe.mp4)
-
 
 ## Improvements
 TODO: Capture more pictures
