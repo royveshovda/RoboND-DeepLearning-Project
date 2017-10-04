@@ -107,3 +107,5 @@ data/validation
 data/sample_evaluation_data
 data/processed_sim_data
 data/raw_sim_data
+data/train-backup
+data/validation-backup
