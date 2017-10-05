@@ -26,43 +26,55 @@ While the skip connections blend in the CNN layers to improve the image segmenta
 
 I ended up using a fairly deep FCN in my project, consisting of 5 layers CNNs and the same number of upsampling layers with skip connections.
 
+I addition to the suggestions in the lessons, I also included an extra convolution layer in the encoder, to allow the network to learn even more features.
+
 ### The write-up conveys the student's understanding of the parameters chosen for the the neural network
 
 #### Learning rate
-I tried different learning rates, but they either overtrained, or trained very, very slow. In the end the recommended learning rate for adam optimiser ended up being my choice as well:
-0.001
+I tried different learning rates, but they either overtrained, or trained very, very slow. In the end the recommended learning rate for nadam optimiser ended up being my choice as well:
+0.002
 
 #### Batch size
-In short this number should be as high as your system can handle. In my case, my GPU could handle a batch size of 256.
+In short this number should be as high as your system can handle. In my case, my GPU could handle a batch size of 40.
 
 #### Steps per epoch
-A good number here should be the number of images to train on, divided by the batch size. Which is why I chose the number 15.
+A good number here should be the number of images to train on, divided by the batch size. Which is why I chose the number 94.
 
 #### Validation steps per epoch
-Same as with steps per epoch, only related to number of images to validate on. My number was 5.
+Same as with steps per epoch, only related to number of images to validate on. My number was 30.
 
 #### Number of epochs
 This is the number of times you want the training to run. The balance it between not training enough and overtraining. The right balance gives us the best performing model, in it's most general form. With the size of my model and the learning rate, I ended up running the training for 100 epochs.
 
 #### Result
-The result of these hyper parameters gave the learning loss are shown in the figure below.
+The result of these hyper parameters gave the learning loss are shown in the figure below. As the figure shows the loss jumps up and down a bit, and even indicates overlearning. Part of this was because I only used the provided validation data, and part of it falls down on the Nadam optimizer.
 
 ![alt text](docs/misc/learning.png "Learning rate")
 
 #### Workers
-This is the number of parallel processes during training. I tried different values here, but could not find any significant differences. I ended up with 10.
+This is the number of parallel processes during training. I tried different values here, but could not find any significant differences. I ended up with 4.
 
 ### The student has a clear understanding and is able to identify the use of various techniques and concepts in network layers indicated by the write-up
 
 See explanation above.
 
+In addition to the provided to code I ended up switching optimizer to Nadam. It turned out to tune my model a bit better than Adam.
+
 ### The student has a clear understanding of image manipulation in the context of the project indicated by the write-up
 
-See explanation above.
+I followed the suggetions from the classroom lessons, and collected data in 3 different ways:
+1: Follow hero while zig-zagging and other people around
+2: Patrol large path without hero or other people
+3: Images of hero at distance with lots of people. I got inspired of the last video showing lots of rounds around a bush.
+
+In addition I created the file called filter.py, which deletes all the images in a folder not containing the hero. I ran the filter on number 1 and 3 in the list above, to help ficus the training.
+To capture enough images for step 3 I set up a path for hero and drone, and let it run at full speed for 45 minutes. This gave me about 11000 images, which I in turned ran the filter on, and ended up with about 3000 images of the hero at various angles and distances, in crowded area.
 
 ### The student displays a solid understanding of the limitations to the neural network with the given data chosen for various follow-me scenarios which are conveyed in the write-up
 
 The project description indicates that more image capturing might be needed to get the mandatory result. This became clear as I tested the model in the simulator. In the patrol mode, the model had problems locating the hero. But once the model changed to follow mode, it behaved very good. This indicate to me that the images provided lacks in detecting the hero at distance and from different angles, but also that the images as a good sample of the hero from behind.
+
+As a next step I started to collect large amounts of images to try to improve this area. I captured about 3000 more images of the hero.
 
 ## Model
 ### The model is submitted in the correct format
@@ -70,24 +82,18 @@ The resulting model can be found in the folder called data/weights . The model u
 
 ### The neural network must achieve a minimum level of accuracy for the network implemented
 
-The model performs OK in follow mode, but takes a long time to lock on to the hero. This means that the model does not recognise the hero from many different distances and angles. But as soon as the model locks on, the follow mode is solid.
+To perform at the required bar, I ended up with a large model, which I in addition trained on images of full size. As a result the inception part could no longer run on my laptop, but needed the support of a proper GPU to run. Put overall performance is now good.
 
-The resulting IoU (Intersection of union) score is 46%. Over the required threshold, but not by much. The detection of the hero at distance ruins the score and performance.
+The resulting IoU (Intersection of union) score is 54%. Over the required threshold.
 
 A video from the follow mode can be found [here (docs/misc/FollowMe.mp4)](./docs/misc/FollowMe.mp4)
 
 ## Improvements
-### Capture more pictures
-As indicated above, I believe the model would behave much better on a set of captured images of the hero. Both at distance and at different angles.
-
-### Train on more images
-With more captured data the model could be trained to behave better at distance.
-
-### Train two networks
-It might also be beneficial to train two different models. One for following the hero, and a different one for locating the hero. This would allow for the network to be more specialized.
-
-### Train two different last half
-As indicated in the lessons it is possible to construct a model where the CNN part, and the 1x1 convolution is identical for the two network. But the transpose, upsampling and skip connections are specialized for different purposes. This relates to the suggestion above about separate models, but could be a much more effective way to achieve the same result: Specialised models (or part of a model).
+### Descrease the size of the model
+As indicated above, The model now requires GPU to run properly. The model could possibly be tuned to perform at the same level, but smaller. I am not sure, but I believe with more time, it should be possible.
 
 ### Tensorflow
 I own a multi GPU computer, so a rewrite to Tensorflow to make use of both the GPUs in my computer, would most likely improve the speed of trsining. Which in turn would allow me to test many more models and hyperparameters. Since Keras can use Tensorflow as it's backend, such a rewrite should be very possible.
+
+## Summary
+The whole process was very time consuming. I have had my computer running every night for almost a week not to test different approaches. At the end I went for lots of data, a very big model, and a different optimizer. Which in sum brought me over the threshold.
